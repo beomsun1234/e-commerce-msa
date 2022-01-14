@@ -21,6 +21,16 @@
 POST - localhost:8000/order/products/{id}/order
 
 
+## order service 
+
+![orderservice](https://user-images.githubusercontent.com/68090443/149526116-0a9ff3c3-8eea-452c-9dec-2756fc16360f.PNG)
+
+
+## product service
+
+![product서비스](https://user-images.githubusercontent.com/68090443/149526146-976695f4-4ddd-41d4-92f7-3bada5bfceba.PNG)
+
+
 카프카 설정은 생략한다.
 
 ## ELK 설정
