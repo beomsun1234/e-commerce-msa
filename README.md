@@ -1,18 +1,24 @@
-# E-Coommerce with MSA + KAFKA + ELK + Spring Cloud Sleth + Zipkin 
+# E-Coommerce with MSA + KAFKA + ELK + Spring Cloud Sleth + Zipkin + Kubernetes
 
 카프카사용하여 order-service와 product-service의 비동기 처리 및 로그 수집 분산 모니터링
 
 
-
 ## ELK를 이용하여 로그 수집
 
-[사진]
+![이커머스elk를통해 로그수집](https://user-images.githubusercontent.com/68090443/149524277-b2e0f27d-dcee-4b48-96dc-f07a558d8452.PNG)
+
 
 ## Spring Cloud Sleth + Zipkin이용한 분산 모니터링
 
-[사진]
+
+![이커머스zipkin](https://user-images.githubusercontent.com/68090443/149524304-c051251f-34b3-4b4c-9c19-d8d6a4a50d28.PNG)
 
 
+## Postman 통해 요청
+
+![postman](https://user-images.githubusercontent.com/68090443/149524655-863cec8b-d64e-41a1-afa1-bf2c33164d72.PNG)
+
+POST - localhost:8000/order/products/{id}/order
 
 
 카프카 설정은 생략한다.
