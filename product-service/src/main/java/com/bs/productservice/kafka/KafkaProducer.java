@@ -16,7 +16,7 @@ public class KafkaProducer {
      * @param message
      */
     public void sendResponseMessageToOrder(String message){
-        kafkaTemplate.send("product-qty","product Id = "+message+" 수량 감소");
+        kafkaTemplate.send("product-qty",message);
     }
 
 
