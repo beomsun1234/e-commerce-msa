@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+kafka:
+  host: 127.0.0.1:9092
+
+logging:
+  config: classpath:logback.xml
+spring:
+  application:
+    name: product-service
+  zipkin:
+    base-url: http://localhost:9411
+  sleuth:
+    sampler:
+      probability: 1.0
+
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
