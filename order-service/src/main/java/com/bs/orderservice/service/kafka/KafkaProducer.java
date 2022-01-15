@@ -1,4 +1,4 @@
-package com.bs.orderservice.kafka;
+package com.bs.orderservice.service.kafka;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
