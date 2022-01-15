@@ -1,0 +1,19 @@
+version: "3.7"
+services:
+  db:
+    container_name: mardidb
+    image: mariadb
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+    ports:
+      - 3306:3306
+    volumes:
+      - C:\Users\박범선\datadir:/var/lib/mysql
+    restart: always
+
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - 9411:9411
+    
