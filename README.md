@@ -14,6 +14,12 @@
 ![이커머스zipkin](https://user-images.githubusercontent.com/68090443/149524304-c051251f-34b3-4b4c-9c19-d8d6a4a50d28.PNG)
 
 
+![zipkin](https://user-images.githubusercontent.com/68090443/149607345-1491aaf9-6617-445f-b137-51423ed550d7.PNG)
+
+
+![집킨2](https://user-images.githubusercontent.com/68090443/149607350-66b00393-5881-4703-98ef-42c2ec1361d3.PNG)
+
+
 ## Postman 통해 요청
 
 ![postman](https://user-images.githubusercontent.com/68090443/149524655-863cec8b-d64e-41a1-afa1-bf2c33164d72.PNG)
@@ -29,6 +35,7 @@ POST - localhost:8000/order/products/{id}/order
 ## product service
 
 ![product서비스](https://user-images.githubusercontent.com/68090443/149526146-976695f4-4ddd-41d4-92f7-3bada5bfceba.PNG)
+
 
 
 카프카 설정은 생략한다.
