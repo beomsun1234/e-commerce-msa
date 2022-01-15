@@ -16,6 +16,19 @@ spring:
     sampler:
       probability: 1.0
 
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: root
+    password: 1234
+    url: jdbc:mariadb://127.0.0.1:3306/order_service
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
 eureka:
   client:
     register-with-eureka: true
