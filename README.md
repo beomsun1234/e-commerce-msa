@@ -44,7 +44,7 @@ POST - localhost:8000/order/products/{id}/order
 
 ```우선 ELK( Elasticsearch, Logstash, Kibana)를 도커를 이용해서 ELK를 설치```
 
-    git clone https://github.com/ksundong/docker-elk
+    git clone https://github.com/deviantony/docker-elk.git
 
     cd docker-elk
 
