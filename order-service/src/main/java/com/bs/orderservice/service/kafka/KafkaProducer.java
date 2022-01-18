@@ -16,6 +16,7 @@ public class KafkaProducer {
         log.info("topic={}, Kafka Producer Message ={}", topic,message);
     }
 
+
     /**
      * 주문 요청시 재고 감소를 위해
      * @param message
