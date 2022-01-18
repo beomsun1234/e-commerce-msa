@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class KafkaConsumer {
     private final KafkaProducer kafkaProducer;
     private final ProductRepository productRepository;
-    @KafkaListener(topics = "order-request")
+    @KafkaListener(topics = "order-placed")
     public void reduceQty(String message){
         log.info("주문이 요청왔다 해당 상품 재고 삭제해라 productId = "+message);
 
