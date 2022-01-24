@@ -37,3 +37,6 @@ out/
 .vscode/
 application-dev.yml
 logback-dev.xml
+
+application-prod.yml
+logback-prod.xml
