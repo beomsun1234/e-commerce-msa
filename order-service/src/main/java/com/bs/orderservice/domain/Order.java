@@ -29,10 +29,10 @@ public class Order{
     @NotNull
     private Long productId;
 
-
+    @NotNull
     private int quantity;
 
-
+    @NotNull
     private int orderPrice;
 
     @CreatedDate
@@ -44,6 +44,8 @@ public class Order{
     public Order(Long id, Long productId,int quantity, int orderPrice){
         this.id = id;
         this.productId = productId;
+        this.quantity = quantity;
+        this.orderPrice = orderPrice;
     }
 
 
