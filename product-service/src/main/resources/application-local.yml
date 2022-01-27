@@ -5,7 +5,7 @@ kafka:
   host: 127.0.0.1:9092
 
 logging:
-  config: classpath:logback.xml
+  config: classpath:logback-local.xml
 
 spring:
   application:
