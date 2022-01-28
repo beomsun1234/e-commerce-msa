@@ -1,0 +1,35 @@
+server:
+  port: 8000
+
+spring:
+  application:
+    name: gateway-service
+  zipkin:
+    base-url: http://34.64.187.158:9411
+  sleuth:
+    sampler:
+      probability: 1.0
+
+  cloud:
+    gateway:
+      routes:
+        - id: product-service
+          uri: lb://PRODUCT-SERVICE
+          predicates:
+            - Path=/product/**
+
+        - id: order-service
+          uri: lb://ORDER-SERVICE
+          predicates:
+            - Path=/order/**
+
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://34.64.187.158:8761/eureka
+  instance:
+    prefer-ip-address: true
+    ip-address: 34.64.187.158

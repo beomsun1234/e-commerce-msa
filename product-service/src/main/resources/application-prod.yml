@@ -1,0 +1,38 @@
+server:
+  port: 8080
+
+kafka:
+  host: 34.64.187.158:9092
+
+
+spring:
+  application:
+    name: product-service
+  zipkin:
+    base-url: http://34.64.187.158:9411
+  sleuth:
+    sampler:
+      probability: 1.0
+
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: root
+    password: 1234
+    url: jdbc:mariadb://34.64.187.158:3306/product_service
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://34.64.187.158:8761/eureka
+  instance:
+    prefer-ip-address: true
+    ip-address: 34.64.187.158
