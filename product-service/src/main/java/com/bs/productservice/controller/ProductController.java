@@ -12,6 +12,6 @@ public class ProductController {
     @GetMapping("")
     public String test(){
         log.info("product-service");
-        return "product-service";
+        return "product-service update";
     }
 }

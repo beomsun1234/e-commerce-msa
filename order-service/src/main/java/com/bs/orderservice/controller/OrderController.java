@@ -16,7 +16,7 @@ public class OrderController {
     @GetMapping("")
     public String test(){
         log.info("order-service");
-        return "order-service";
+        return "order-service update";
     }
 
     @PostMapping("products/{id}/order")
