@@ -1,6 +1,24 @@
-# E-Coommerce with MSA + KAFKA + ELK + Spring Cloud Sleth + Zipkin + Kubernetes
+# E-Coommerce with MSA + KAFKA + ELK + Spring Cloud Sleth + Zipkin + Kubernetes + Jenkins + Docker
 
-카프카사용하여 order-service와 product-service의 비동기 처리 및 로그 수집 분산 모니터링
+카프카사용하여 order-service와 product-service의 비동기 처리 및 로그 수집 분산 모니터링 및 
+
+Jenkins를 사용하여 CI/CD 구축  main baranch에서 작업이 완료되면 빌드 및 테스트 성공 후 Rolling Update
+
+## 구성
+
+
+![msa구성](https://user-images.githubusercontent.com/68090443/151831066-cce6235c-8d43-463c-9bee-eb577594138e.PNG)
+
+
+![eureka](https://user-images.githubusercontent.com/68090443/151831364-365bb19b-c74c-4474-ae5c-abafa551a185.jpg)
+
+
+
+## 쿠버네티스 모니터링(대시보드)
+
+
+![msa이커머스쿠버네티스대시보드](https://user-images.githubusercontent.com/68090443/151829426-f4946363-5398-462e-99db-3790717b4b0f.PNG)
+
 
 
 ## ELK를 이용하여 로그 수집
@@ -11,20 +29,122 @@
 ## Spring Cloud Sleth + Zipkin이용한 분산 모니터링
 
 
-![이커머스zipkin](https://user-images.githubusercontent.com/68090443/149524304-c051251f-34b3-4b4c-9c19-d8d6a4a50d28.PNG)
+![msa-zipkin](https://user-images.githubusercontent.com/68090443/151829255-3632efe7-f410-4f0a-8e9a-c2cefa843d35.jpg)
 
 
-![zipkin](https://user-images.githubusercontent.com/68090443/149607345-1491aaf9-6617-445f-b137-51423ed550d7.PNG)
+
+![msa집킨](https://user-images.githubusercontent.com/68090443/151829316-656a5303-a523-4db8-9fb2-3b0dbda4fb3e.jpg)
+
 
 
 ![집킨2](https://user-images.githubusercontent.com/68090443/149607350-66b00393-5881-4703-98ef-42c2ec1361d3.PNG)
 
+## CI/CD
+
+
+![cicd아키텍처](https://user-images.githubusercontent.com/68090443/151831132-f4d0e027-b5af-4b74-8946-65d13d94927b.PNG)
+
+
+![잰킨스배포](https://user-images.githubusercontent.com/68090443/151829757-f50f0047-3879-4df8-bf33-c03b2ec78461.jpg)
+
+
+### jenkins pipeline 
+
+    pipeline {
+            agent any
+            environment{
+                DOCKERHUB_CREDENTIALS=credentials('docker-hub')
+            }
+            stages {
+                stage('github clone') {
+                    steps {
+                        git branch: 'main',
+                            credentialsId: 'github',
+                            url: 'https://github.com/beomsun1234/e-commerce-msa.git'
+                    }
+                }
+
+                stage('build') {
+                    steps {
+                        sh """
+                            cd /var/lib/jenkins/workspace/msa/order-service
+                            chmod +x gradlew
+                            ./gradlew clean build 
+                            echo 'order-service build sucess'
+                        """
+                        sh """
+                            cd /var/lib/jenkins/workspace/msa/product-service
+                            chmod +x gradlew
+                            ./gradlew clean build
+                            echo 'product-service build sucess'
+                        """
+                    }
+                }
+                stage('docker build') {
+                    steps {
+                        sh """
+                            cd /var/lib/jenkins/workspace/msa/order-service
+                            sudo docker build -t beomsun22/order-service:${BUILD_NUMBER} .
+                            echo 'docker jenkins-order build sucess'
+                        """
+                        sh """
+                            cd /var/lib/jenkins/workspace/msa/product-service
+                            sudo docker build -t beomsun22/product-service:${BUILD_NUMBER} .
+                            echo 'docker jenkins-product build sucess'
+                        """
+                    }
+                }
+                stage('login'){
+                    steps{
+                        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                    }
+                }
+                 stage('docker push') {
+                    steps {
+                        sh 'docker push beomsun22/order-service:${BUILD_NUMBER}'
+                        echo 'docker order-service:v${BUILD_NUMBER} push sucess'
+                        sh 'docker push beomsun22/product-service:${BUILD_NUMBER}'
+                        echo 'docker product-service:v${BUILD_NUMBER} push sucess'
+                    }
+                }
+                stage('deploy') {
+                    steps {
+                        sh """
+
+                            sudo ssh root@[worker ip] 'export KUBECONFIG=/etc/kubernetes/admin.conf'
+                            sudo ssh root@[worker ip] 'kubectl get pod'
+                            sudo ssh root@[worker ip] '/home/beomsun159/./test.sh aaa bbb'
+                            sudo ssh root@[worker ip] '/home/beomsun159/./rolling_update.sh order-service order-service beomsun22/order-service:${BUILD_NUMBER}'
+                            sudo ssh root@[worker ip] '/home/beomsun159/./rolling_update.sh product-service product-service beomsun22/product-service:${BUILD_NUMBER}'
+                        """
+                    }
+                }
+            }
+            post {
+                always{
+                    sh 'docker logout'
+                }
+            }
+        }
+
+### rolling update shell script 
+
+    echo "deploy name = ${1}"
+    echo "container name = ${2}"
+    echo "image name = ${3}"
+    kubectl set image deployment ${1} ${2}=${3}
+    echo "run kubectl set image deployment ${1} ${2}=${3}"
+    kubectl get pod
+
+
 
 ## Postman 통해 요청
 
-![postman](https://user-images.githubusercontent.com/68090443/149524655-863cec8b-d64e-41a1-afa1-bf2c33164d72.PNG)
 
-POST - localhost:8000/order/products/{id}/order
+![post맨](https://user-images.githubusercontent.com/68090443/151830984-213203ec-a873-4271-b3b3-6aaf566495ff.PNG)
+
+
+POST - gcp공개IP:8000/order/products/{id}/order
 
 
 ## order service 
@@ -35,147 +155,4 @@ POST - localhost:8000/order/products/{id}/order
 ## product service
 
 ![product서비스](https://user-images.githubusercontent.com/68090443/149526146-976695f4-4ddd-41d4-92f7-3bada5bfceba.PNG)
-
-
-
-카프카 설정은 생략한다.
-
-## ELK 설정
-
-```우선 ELK( Elasticsearch, Logstash, Kibana)를 도커를 이용해서 ELK를 설치```
-
-    git clone https://github.com/deviantony/docker-elk.git
-
-    cd docker-elk
-
-1. Elasticsearch 설정
-
-        cd elasticsearch
-
-
-    Dockerfile 변경
-
-        ARG ELK_VERSION
-
-        # https://www.docker.elastic.co/
-        FROM docker.elastic.co/elasticsearch/elasticsearch:${ELK_VERSION}
-
-        # Add your elasticsearch plugins setup here
-        # Example: RUN elasticsearch-plugin install analysis-icu
-        RUN elasticsearch-plugin install analysis-nori ##여기 추가
-    
-    config 설정(elasticsearch.yml)
-
-        cd config
-
-        ---
-        ## Default Elasticsearch configuration from Elasticsearch base image.
-        ## https://github.com/elastic/elasticsearch/blob/master/distribution/docker/src/docker/config/elasticsearch.yml
-        #
-        cluster.name: "docker-cluster"
-        network.host: 0.0.0.0
-
-        ## x팩 부분을 전부 제거해준다
-
-
-2. kibana 설정
-
-    config 설정(kibana.yml)
-
-        cd kibana/config
-        ---
-        ## Default Kibana configuration from Kibana base image.
-        ## https://github.com/elastic/kibana/blob/master/src/dev/build/tasks/os_packages/docker_generator/templates/kibana_yml.template.ts
-        #
-        server.name: kibana
-        server.host: 0.0.0.0
-        elasticsearch.hosts: [ "http://elasticsearch:9200" ]
-        monitoring.ui.container.elasticsearch.enabled: true
-
-        ## x팩 제거
-
-
-3. logstash 설정
-
-    config 설정(logstash.yml)
-
-        cd logstash/cofig
-
-        ---
-        ## Default Logstash configuration from Logstash base image.
-        ## https://github.com/elastic/logstash/blob/master/docker/data/logstash/config/logstash-full.yml
-        #
-        http.host: "0.0.0.0"
-        xpack.monitoring.elasticsearch.hosts: [ "http://elasticsearch:9200" ]
-        ## x팩 제거
-
-     lgstash.conf 설정
-
-        cd logstash/pipeline
-
-        -----
-
-        input {
-            tcp {
-                port => 5000
-            }
-        }
-
-        ## Add your filters / logstash plugins configuration here
-
-        output {
-            elasticsearch {
-                hosts => "elasticsearch:9200"
-                index => "logstash-log"
-                user => "username"
-                password => "password"
-            }
-        }
-
-설정 완료 후 실행
-
-    docker-compose build && docker-compose up -d 
-
-    http://{ip-address}:5601/로 Kibana에 접속
-
-
-spring boot과 연결하기위해 logback.xml을 만들어준다.(생략)
-
-이 후 로그가 찍히면 kibana대시보드에서 확인 할 수 있다.
-
-```References```
-
-[ELK세팅부터 알람까지 - 우아한 형제들 기술 블로그]( https://techblog.woowahan.com/2659/)
-
-
-### Sleth + Zipkin 설정
-
-Zipkin을 도커로 실행
-
-    docker pull openzipkin/zipkin
-
-    docker run -d -p 9411:9411 --name zipkin openzipkin/zipkin
-
-이 후 Spring Boot에 Zipkin & Spring Cloud Sleuth 적용
-
-1. 의존성 주입
-
-        dependencies {
-            ......
-            implementation 'org.springframework.cloud:spring-cloud-sleuth-zipkin'
-            implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
-            ....
-        }
-
-2. yml또는 properties 설정
-
-        spring:
-            application:
-                name: [Zipkin UI에서 확인하고 싶은 서비스명]
-            sleuth:
-                sampler:
-                    probability: 1.0
-            zipkin:
-                base-url: http://[Zipkin 실행 호스트 ip]:9411/
-
 
